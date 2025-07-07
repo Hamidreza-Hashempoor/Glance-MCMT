@@ -56,7 +56,7 @@ This project executes
 2) Feature extraction of each target
 
 
-We'll utilize pre-trained model for reidentification.
+I'll utilize pre-trained model for reidentification.
 
 ## Running Tracking
 
@@ -117,7 +117,7 @@ python BoT-SORT/multi_camera_fix.py
 ```
 
 #### 6. Evaluation
-We have adapted the [TrackEval](https://github.com/JonathonLuiten/TrackEval) repository such that it evaluate 3D HOTA metric for 3D bounding boxes.
+I have adapted the [TrackEval](https://github.com/JonathonLuiten/TrackEval) repository such that it evaluates 3D HOTA metric for 3D bounding boxes.
 For more details see:
 `from trackeval.datasets.aicity_3d import AICity3D`
 
