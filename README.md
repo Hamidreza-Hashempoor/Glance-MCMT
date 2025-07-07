@@ -9,7 +9,9 @@ This solution is not probably the best solution, while I guess it is the simples
 The official dataset can be downloaded from the AI City Challenge website (https://huggingface.co/datasets/nvidia/PhysicalAI-SmartSpaces/tree/main/MTMC_Tracking_2025). 
 
 
+## Overall Pipeline
 
+<img src="overall-pipeline.png" width="650" />
  
 
 
