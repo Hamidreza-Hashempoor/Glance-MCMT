@@ -14,6 +14,7 @@ The official dataset can be downloaded from the AI City Challenge website (https
 ## Environment Requirements
 
 The implementation of our work is built upon [BoT-SORT](https://github.com/NirAharon/BoT-SORT) and [torchreid](https://github.com/KaiyangZhou/deep-person-reid).
+Special thanks to [YACHIYO_RIIPS](https://github.com/riips/AIC24_Track1_YACHIYO_RIIPS) that our code is build upon their version.
 
 Three different environments are required for the reproduction process. Please install these two environments according to the following repos:
 <a name="install"></a>
