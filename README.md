@@ -11,7 +11,7 @@ The official dataset can be downloaded from the AI City Challenge website (https
 
 ## Overall Pipeline
 
-<img src="overall-pipeline.png" width="650" />
+<img src="overall-pipeline.jpg" width="1050" />
  
 
 
