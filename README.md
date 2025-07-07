@@ -1,6 +1,8 @@
 # Glance-MCMT: A General MCMT Framework with Glance Initialization and Progressive Association
 
-
+## Explanation
+I tried to provide a simple solution for MCMT tracking framework. The idea is simple and works based on progressive association, while an initial global ID association (I call it glance association) is conducted at first.
+This solution is not probably the best solution, while I guess it is the simplest one :D
 
 ## Dataset Availability
 
