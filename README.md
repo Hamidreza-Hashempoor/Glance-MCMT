@@ -79,6 +79,7 @@ source extract_frame_train_25.sh
 Run steps below for person detection.
 - Install BoT-SORT as instructed in Environment Requirement section above [here](#install).
 - Prepare Models. Download the pretrained YOLOX_x model from [ByteTrack [Google Drive]](https://drive.google.com/file/d/1P4mY0Yyd3PPTybgZkjMYhFri88nTmJX5/view), and store it to BoT-SORT directory after retraining it on the training set (follow the instruction provided in ByteTrack for retraining YOLOX). See `scripts/train_detector.sh` for example.
+- Copy `BoT-SORT/tools/utils_25_revised.py`, `BoT-SORT/tools/utils_25.py`, `BoT-SORT/single_camera_tracking.py`, `BoT-SORT/single_camera_fix.py`, `BoT-SORT/multi_camera_revised.py` an `BoT-SORT/multi_camera_fix.py` into `BoT-SORT`
 - Run person detection by executing a command below.
 ```
 source scripts/detection_25.sh
