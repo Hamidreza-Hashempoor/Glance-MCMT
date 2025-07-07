@@ -95,9 +95,9 @@ source scripts/embedding_25.sh
 ```
 
 
-### Single Camera People Tracking and Multi Camera People Tracking
+### Single Camera Tracking and Multi Camera Tracking
 
-#### 4. Single Camera People Tracking
+#### 4. Single Camera Tracking
 
 Run command steps below to run Single Camera Target Tracking
 ```
@@ -108,7 +108,7 @@ source scripts/single_tracking_25.sh
 source scripts/single_tracking_fix_25.sh
 ```
 
-#### 5. Multi Camera People Tracking
+#### 5. Multi Camera Tracking
 
 Run command below to run Multi Camera Target Tracking
 ```
