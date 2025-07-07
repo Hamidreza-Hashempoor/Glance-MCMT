@@ -1,0 +1,25 @@
+ninja_required_version = 1.3
+cxx = /usr/bin/g++-10
+
+cflags = -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -fPIC -I/data2/Hamid/BoT-SORT/yolox/layers/csrc -I/home/nvnn/miniconda3/envs/botsort_env/lib/python3.8/site-packages/torch/include -I/home/nvnn/miniconda3/envs/botsort_env/lib/python3.8/site-packages/torch/include/torch/csrc/api/include -I/home/nvnn/miniconda3/envs/botsort_env/lib/python3.8/site-packages/torch/include/TH -I/home/nvnn/miniconda3/envs/botsort_env/lib/python3.8/site-packages/torch/include/THC -I/home/nvnn/miniconda3/envs/botsort_env/include/python3.8 -c
+post_cflags = -O3 -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1011"' -DTORCH_EXTENSION_NAME=_C -D_GLIBCXX_USE_CXX11_ABI=0 -std=c++17
+cuda_dlink_post_cflags = 
+ldflags = 
+
+rule compile
+  command = $cxx -MMD -MF $out.d $cflags -c $in -o $out $post_cflags
+  depfile = $out.d
+  deps = gcc
+
+
+
+
+
+build /data2/Hamid/BoT-SORT/build/temp.linux-x86_64-cpython-38/data2/Hamid/BoT-SORT/yolox/layers/csrc/cocoeval/cocoeval.o: compile /data2/Hamid/BoT-SORT/yolox/layers/csrc/cocoeval/cocoeval.cpp
+build /data2/Hamid/BoT-SORT/build/temp.linux-x86_64-cpython-38/data2/Hamid/BoT-SORT/yolox/layers/csrc/vision.o: compile /data2/Hamid/BoT-SORT/yolox/layers/csrc/vision.cpp
+
+
+
+
+
+
