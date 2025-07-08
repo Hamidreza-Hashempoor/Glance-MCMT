@@ -15,7 +15,7 @@ from itertools import combinations
 
 import sys
 try:
-    sys.path.append('/data2/Hamid/AI_city_challenge_2025/AIC24_Track1_YACHIYO_RIIPS/BoT-SORT')
+    sys.path.append('BoT-SORT')
 except:
     print( "bot sort already in path")
 
@@ -1371,32 +1371,7 @@ def filter_expressive_features(object_features: dict, cam_folder, args) -> dict:
 
     return filtered
 
-# def ensure_all_coords_have_features(data, object_coords, object_features, camera_folder):
-#     missing_ids = [sc_id for sc_id in object_coords if sc_id not in object_features]
 
-#     for sc_id in missing_ids:
-#         object_features[sc_id] = []
-
-#         # Scan all frames sorted by frame number
-#         for frame_str in sorted(data.keys(), key=lambda x: int(x)):
-#             objs = data[frame_str]
-
-#             for obj in objs:
-#                 if obj["object sc id"] != sc_id:
-#                     continue
-
-#                 feat_path = obj.get("feature path", None)
-#                 if feat_path and feat_path.lower().endswith(".npy"):
-#                     try:
-#                         feat_full_path = os.path.join("EmbedFeature", feat_path)
-#                         feature = np.load(feat_full_path)
-#                         object_features[sc_id].append(feature)
-#                         print(f"[INFO] Loaded fallback feature for {camera_folder} sc_id={sc_id} from frame {frame_str}")
-#                         break  # Stop after first found feature
-#                     except Exception as e:
-#                         print(f"[WARN] Failed to load fallback feature for {camera_folder} sc_id={sc_id} from {feat_path}: {e}")
-#             if object_features[sc_id]:
-#                 break  # Done once we have one feature
 
 def ensure_all_coords_have_features(data, object_coords, object_features, camera_folder):
     missing_ids = [sc_id for sc_id in object_coords if sc_id not in object_features]
@@ -1488,33 +1463,6 @@ def ensure_all_frame_coords_have_features(data, object_coords, object_features, 
             print(f"[WARN] All feature paths failed to load for {camera_folder} sc_id={sc_id}")
 
 
-# def assign_initial_global_ids(all_tracklets_by_camera, args):
-#     global_tracklets = []  # List of assigned tracklets
-#     global_id_counter = 0
-
-#     for cam_index, tracklets in enumerate(all_tracklets_by_camera):
-#         local_used_gids = set()  # Prevent duplicate global IDs in the same camera
-#         for tracklet in tracklets:
-#             matched_gid = None
-
-#             for global_tr in global_tracklets:
-#                 if is_trajectory_similar(tracklet["coords"], global_tr["coords"], threshold=args.trajectory_dist_thresh_init):
-#                     if is_feature_similar(tracklet["features"], global_tr["features"], sim_thresh=args.feature_similarity_thresh_init, metric= args.metric):
-#                         if global_tr["global_id"] not in local_used_gids:
-#                             matched_gid = global_tr["global_id"]
-#                             break
-
-#             if matched_gid is None:
-#                 matched_gid = global_id_counter
-#                 global_id_counter += 1
-
-#             tracklet["global_id"] = matched_gid
-#             local_used_gids.add(matched_gid)
-#             global_tracklets.append(tracklet)
-
-#     unique_gids = set(t["global_id"] for t in global_tracklets)
-#     print(f"[INFO] Assigned initial global IDs: {len(global_tracklets)} tracklets → {len(unique_gids)} unique global IDs")
-#     return global_tracklets
             
 def assign_initial_global_ids(all_tracklets_by_camera, args):
     global_tracklets = []  # List of assigned tracklets
@@ -1606,66 +1554,6 @@ def extend_global_tracklets(global_tracklets, object_coords, object_features, ca
 
     return global_tracklets, extended_count
 
-# def extend_global_tracklets_with_full_data_fixed(global_tracklets, data, cam_folder, args):
-#     """
-#     Extend global tracklets by copying the entire local tracklet (all frames) for matched (camera_id, sc_id).
-#     """
-#     global_lookup = {(tr["camera_id"], tr["local_id"]): tr for tr in global_tracklets}
-#     local_tracklets = {}
-
-#     for frame_str, objs in data.items():
-#         frame_id = int(frame_str)
-#         for obj in objs:
-#             sc_id = obj.get("object sc id")
-#             if sc_id is None:
-#                 continue
-#             if sc_id not in local_tracklets:
-#                 local_tracklets[sc_id] = []
-#             local_tracklets[sc_id].append((frame_id, obj))
-
-#     extended_count = 0
-
-#     for sc_id, frame_obj_list in local_tracklets.items():
-#         key = (cam_folder, sc_id)
-#         if key in global_lookup:
-#             tr = global_lookup[key]
-#             for frame_id, obj in frame_obj_list:
-#                 if "3d location" in obj:
-#                     coord = obj["3d location"]
-
-#                     # Ensure all coords are in (frame_id, coord) format
-#                     if "coords" in tr:
-#                         if tr["coords"] and not isinstance(tr["coords"][0], tuple):
-#                             # Assume pre-glance coords match frame range 1...N
-#                             pre_coords = tr["coords"]
-#                             tr["coords"] = [(fid, c) for fid, c in zip(range(1, args.end_glance_frame + 1), pre_coords)]
-
-#                     tr.setdefault("coords", []).append((frame_id, coord))
-
-#             # Optional: deduplicate and sort coords by frame_id
-#             if "coords" in tr:
-#                 dedup = {fid: coord for fid, coord in tr["coords"]}
-#                 tr["coords"] = sorted(dedup.items())  # list of (frame_id, coord)
-
-#             for frame_id, obj in frame_obj_list:
-#                 if "feature path" in obj:
-#                     tr.setdefault("feature_paths", []).append(obj["feature path"])
-
-#                 if "object type" in obj and "object type" not in tr:
-#                     tr["object type"] = obj["object type"]
-
-#                 for attr in ["3d bounding box scale", "3d bounding box rotation", "2d bounding box visible"]:
-#                     if attr in obj:
-#                         tr.setdefault(attr + "_sequence", []).append(obj[attr])
-
-#                 # Always accumulate metadata
-#                 for attr in ["3d bounding box scale", "3d bounding box rotation", "2d bounding box visible"]:
-#                     if attr in obj:
-#                         tr.setdefault(attr + "_sequence", []).append(obj[attr])
-
-#             extended_count += 1
-
-#     return global_tracklets, extended_count
 
 
 def extend_global_tracklets_with_full_data_fixed(global_tracklets, data, cam_folder, args):
@@ -1772,46 +1660,6 @@ def extract_coords_features_from_frames(data, cam_folder, frame_start):
                     print(f"[{cam_folder}] Failed to load feature for sc_id={sc_id} from {feat_path}: {e}")
 
     return object_coords, object_features
-
-# def extract_unassigned_coords_features(data, cam_folder, frame_start, existing_keys):
-#     """
-#     Extracts coordinates and features of local tracklets that are NOT already assigned
-#     to global IDs (based on camera_id, local_id), and only from post-glance frames.
-
-#     Returns:
-#         object_coords, object_features
-#     """
-#     object_coords = {}
-#     object_features = {}
-
-#     for frame_str, objs in data.items():
-#         frame_id = int(frame_str)
-#         if frame_id < frame_start:
-#             continue
-
-#         for obj in objs:
-#             sc_id = obj["object sc id"]
-#             key = (cam_folder, sc_id)
-#             if key in existing_keys:
-#                 continue  # Skip already assigned
-
-#             coord = obj["3d location"]
-#             feat_path = obj.get("feature path", None)
-
-#             object_coords.setdefault(sc_id, []).append(coord)
-
-#             if feat_path and feat_path.lower().endswith(".npy"):
-#                 try:
-#                     feat_full_path = os.path.join("EmbedFeature", feat_path)
-#                     feature = np.load(feat_full_path)
-#                     object_features.setdefault(sc_id, []).append(feature)
-#                 except Exception as e:
-#                     print(f"Warning: Failed to load feature for sc_id={sc_id} from {feat_path}: {e}")
-#     # Final pass: warn if any sc_id is missing all features
-#     for sc_id in object_coords:
-#         if sc_id not in object_features or len(object_features[sc_id]) == 0:
-#             print(f"Warning: No feature found for camera={cam_folder}, sc_id={sc_id} in post-glance frames")
-#     return object_coords, object_features
 
 def extract_unassigned_coords_features_with_frames(data, cam_folder, frame_start, existing_keys):
     """
@@ -2129,186 +1977,6 @@ def split_global_map_by_completion(assigned_global_map, args):
 
 
 
-# def match_unassigned_to_assigned(unassigned_local_map, assigned_global_map, args):
-#     phase = 0  # 0 = strict, 1 = relax directional check, 2 = force
-#     stagnant_rounds = 0
-#     max_stagnant_rounds = 5
-#     min_shared_frames = 10  # or args.min_shared_frame if you expose it
-
-#     while True:
-#         newly_assigned = []
-
-#         # Step 0: Refresh active vs completed tracklets
-#         completed_global_map, active_global_map = split_global_map_by_completion(assigned_global_map, args)
-#         assigned_global_map = active_global_map  # Only use active tracklets for matching
-#         print("[DEBUG] Active global tracklets after filtering:")
-#         print("[DEBUG] Global ID → Frame Range Summary (Active Tracklets):")
-
-#         global_id_to_frames = defaultdict(list)
-#         for gtrack in assigned_global_map.values():
-#             global_id = gtrack["global_id"]
-#             coords = gtrack["object"].get("coords", [])
-#             frame_ids = [fid for fid, _ in coords]
-#             global_id_to_frames[global_id].extend(frame_ids)
-
-#         for g_id, frames in global_id_to_frames.items():
-#             if frames:
-#                 min_f = min(frames)
-#                 max_f = max(frames)
-#                 print(f"  🔹 global_id={g_id}: covers frames {min_f} → {max_f} ({len(frames)} total frames)")
-#             else:
-#                 print(f"  ⚠️  global_id={g_id}: has no coordinates")
-        
-#         if not active_global_map:
-#             print("[INFO] All global tracklets are complete. Stopping.")
-#             break
-
-
-#         # 🔹 Step 1: Build the frame range for assigned global tracklets
-#         global_frame_ranges = {}
-#         for (cam_id, local_id), gtrack in assigned_global_map.items():
-#             gcoords = gtrack["object"]["coords"]
-#             if not gcoords:
-#                 continue
-
-#             # Get the first and last frame of the global tracklet
-#             first_frame = gcoords[0][0]
-#             last_frame = gcoords[-1][0]
-#             global_frame_ranges[(cam_id, local_id)] = (first_frame, last_frame)
-        
-#         # 🔹 Step 2: Find unassigned local tracklets that overlap with assigned tracklets based on frame ranges
-#         common_frame_unassigned_local_map = {}
-#         for (cam_id, local_id), frame_obj_list in list(unassigned_local_map.items()):
-#             local_frames = [f for f, _ in frame_obj_list]
-#             local_first_frame = min(local_frames)
-#             local_last_frame = max(local_frames)
-
-#             # Check for overlap with any of the global tracklet frame ranges
-#             for (assigned_cam_id, assigned_local_id), (global_first_frame, global_last_frame) in global_frame_ranges.items():
-#                 if cam_id != assigned_cam_id:
-#                     overlap_start = max(local_first_frame, global_first_frame)
-#                     overlap_end = min(local_last_frame, global_last_frame)
-#                     overlap_length = max(0, overlap_end - overlap_start + 1)
-
-#                     # 🔸 Additional directional checks
-#                     if overlap_length >= min_shared_frames and \
-#                     local_first_frame >= global_first_frame and \
-#                     local_last_frame > global_last_frame:
-
-#                         if (cam_id, local_id) not in common_frame_unassigned_local_map:
-#                             common_frame_unassigned_local_map[(cam_id, local_id)] = []
-#                         common_frame_unassigned_local_map[(cam_id, local_id)].extend(frame_obj_list)
-
-#         if not common_frame_unassigned_local_map:
-#             print("[INFO] No unassigned tracklets with sufficient frame overlap. Ending early.")
-#             break
-
-        
-#         # Tiered matching strategy
-#         match_round = 0
-#         remaining_unassigned = dict(common_frame_unassigned_local_map)
-
-#         while match_round < 3 and remaining_unassigned:
-#             newly_assigned = []
-#             matched_global_ids_this_round = set()
-
-#             round_type = ["Full match (traj + feature)", "Fallback (traj only)", "Force match"][match_round]
-#             print(f"\n[ROUND {match_round + 1}] Matching round started: {round_type}")
-#             print(f"Unassigned candidates this round: {len(remaining_unassigned)}")
-
-#             for (cam_id, local_id), frame_obj_list in tqdm(list(remaining_unassigned.items()), desc=f"Matching round {match_round + 1}"):
-#                 # 🔸 Calculate local object's frame range
-#                 local_frame_ids = [fid for fid, _ in frame_obj_list]
-#                 if not local_frame_ids:
-#                     continue  # Skip if no frames
-#                 local_first_frame = min(local_frame_ids)
-#                 local_last_frame = max(local_frame_ids)
-
-#                 coords = [(f, obj["3d location"]) for f, obj in frame_obj_list if "3d location" in obj]
-#                 features_path = [obj["feature path"] for _, obj in frame_obj_list if "feature path" in obj]
-#                 features_path = features_path[:min(40, len(features_path))] # Only last 40 features considered
-#                 features = load_and_get_representative_features(features_path, local_id, cam_id, args)
-
-#                 best_match = None
-#                 best_traj_dist = float('inf')
-#                 best_feat_sim = -1
-
-#                 for (a_cam_id, a_local_id), gtrack in assigned_global_map.items():
-#                     g_id = gtrack["global_id"]
-#                     # if g_id in matched_global_ids_this_round:
-#                     #     continue
-#                     # Only skip if overlap is insufficient (optional optimization)
-#                     gcoords = gtrack["object"]["coords"]
-#                     g_frame_ids = [fid for fid, _ in gcoords]
-#                     if not g_frame_ids:
-#                         continue
-
-#                     g_first = min(g_frame_ids)
-#                     g_last = max(g_frame_ids)
-
-
-#                     # 🔸 Check for frame overlap
-#                     overlap_start = max(local_first_frame, g_first)
-#                     overlap_end = min(local_last_frame, g_last)
-#                     overlap_len = max(0, overlap_end - overlap_start + 1)
-
-#                     if overlap_len < args.min_shared_frame:
-#                         continue
-
-
-#                     # gfeatures = gtrack["object"]["features"]
-#                     gfeatures = gtrack["object"]["features"][:min(40, len(gtrack["object"]["features"]))] # only last 40 features
-#                     traj_dist = trajectory_distance(coords, gcoords)
-#                     feat_sim = feature_similarity(features, gfeatures, metric=args.metric, topk=10)
-
-#                     # Match criteria per round
-#                     if match_round == 0:
-#                         match_condition = traj_dist < args.trajectory_dist_thresh_rest and feat_sim > args.feature_similarity_thresh_rest
-#                     elif match_round == 1:
-#                         match_condition = traj_dist < args.trajectory_dist_thresh_rest
-#                     else:
-#                         match_condition = True  # force match
-
-#                     if match_condition:
-#                         is_better = (traj_dist < best_traj_dist) or (traj_dist == best_traj_dist and feat_sim > best_feat_sim)
-#                         if is_better:
-#                             best_match = (a_cam_id, a_local_id, g_id)
-#                             best_traj_dist = traj_dist
-#                             best_feat_sim = feat_sim
-
-#                             if match_round == 0:
-#                                 print(f"[FEAT-TRAJ-MATCH] Selected (cam={cam_id}, local_id={local_id}) → global_id={g_id} "
-#                                     f"(feat_sim={feat_sim:.3f}, traj_dist={traj_dist:.3f})")
-#                             elif match_round == 1:
-#                                 print(f"[ONLY-TRAJ-MATCH] Selected (cam={cam_id}, local_id={local_id}) → global_id={g_id} "
-#                                     f"(traj_dist={traj_dist:.3f})")
-#                             else:
-#                                 print(f"[FORCE-MATCH WARNING] Forced (cam={cam_id}, local_id={local_id}) → global_id={g_id} "
-#                                     f"(traj_dist={traj_dist:.3f})")
-
-#                 if best_match:
-#                     g_id = best_match[2]
-#                     assigned_global_map[(cam_id, local_id)] = {
-#                         "global_id": g_id,
-#                         "object": {
-#                             "scene_id": args.scene_id,  # assuming you pass this in args
-#                             "camera_id": cam_id,
-#                             "local_id": local_id,
-#                             "coords": coords,
-#                             "features": features,
-#                             "global_id": g_id,
-#                             "object type": frame_obj_list[0][1].get("object type", "Unknown"),
-#                         },
-#                     }
-#                     matched_global_ids_this_round.add(g_id)
-#                     newly_assigned.append((cam_id, local_id))
-
-#             for key in newly_assigned:
-#                 remaining_unassigned.pop(key, None)
-
-#             match_round += 1
-
-#     return assigned_global_map, unassigned_local_map
 
 def post_process_multiple_camera_tracking(args):
     # Load the previously saved multi-camera tracking JSON
@@ -2621,14 +2289,7 @@ def global_matching(
                 
                 if not force_match:
                     if g_id in [gtrack["global_id"] for (g_cam_id, _) , gtrack in assigned_global_map.items() if g_cam_id == cam_id]:
-                        if cam_id == "Camera_11" and local_id ==4:
-                            z=2
-                        continue  # Skip if the global_id is already assigned to the current camera
-                # if cam_id == "Camera_11" and local_id ==4 and a_cam_id == "Camera_10" and a_local_id ==1:
-                #         z=2
-                # if cam_id == "Camera_11" and local_id ==4 and a_cam_id == "Camera_10" and a_local_id ==32:
-                #         z=2
-                ###
+
                 
                 traj_dist = trajectory_distance(coords, gcoords)
                 if match_round ==0 or match_round ==2:
@@ -2653,8 +2314,6 @@ def global_matching(
 
             if best_match:
                 g_id = best_match[2]
-                if cam_id == "Camera_11" and local_id ==4:
-                    z=2
                 # Assign object with full data to global map
                 assigned_global_map[(cam_id, local_id)] = {
                     "global_id": g_id,

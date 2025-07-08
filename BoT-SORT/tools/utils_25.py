@@ -13,7 +13,7 @@ from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 
 import sys
 try:
-    sys.path.append('/data2/Hamid/AI_city_challenge_2025/AIC24_Track1_YACHIYO_RIIPS/BoT-SORT')
+    sys.path.append('BoT-SORT')
 except:
     print( "bot sort already in path")
 
@@ -991,32 +991,6 @@ def filter_expressive_features(object_features: dict, cam_folder, args) -> dict:
 
     return filtered
 
-# def ensure_all_coords_have_features(data, object_coords, object_features, camera_folder):
-#     missing_ids = [sc_id for sc_id in object_coords if sc_id not in object_features]
-
-#     for sc_id in missing_ids:
-#         object_features[sc_id] = []
-
-#         # Scan all frames sorted by frame number
-#         for frame_str in sorted(data.keys(), key=lambda x: int(x)):
-#             objs = data[frame_str]
-
-#             for obj in objs:
-#                 if obj["object sc id"] != sc_id:
-#                     continue
-
-#                 feat_path = obj.get("feature path", None)
-#                 if feat_path and feat_path.lower().endswith(".npy"):
-#                     try:
-#                         feat_full_path = os.path.join("EmbedFeature", feat_path)
-#                         feature = np.load(feat_full_path)
-#                         object_features[sc_id].append(feature)
-#                         print(f"[INFO] Loaded fallback feature for {camera_folder} sc_id={sc_id} from frame {frame_str}")
-#                         break  # Stop after first found feature
-#                     except Exception as e:
-#                         print(f"[WARN] Failed to load fallback feature for {camera_folder} sc_id={sc_id} from {feat_path}: {e}")
-#             if object_features[sc_id]:
-#                 break  # Done once we have one feature
 
 def ensure_all_coords_have_features(data, object_coords, object_features, camera_folder):
     missing_ids = [sc_id for sc_id in object_coords if sc_id not in object_features]
@@ -1253,45 +1227,7 @@ def extract_coords_features_from_frames(data, cam_folder, frame_start):
 
     return object_coords, object_features
 
-# def extract_unassigned_coords_features(data, cam_folder, frame_start, existing_keys):
-#     """
-#     Extracts coordinates and features of local tracklets that are NOT already assigned
-#     to global IDs (based on camera_id, local_id), and only from post-glance frames.
 
-#     Returns:
-#         object_coords, object_features
-#     """
-#     object_coords = {}
-#     object_features = {}
-
-#     for frame_str, objs in data.items():
-#         frame_id = int(frame_str)
-#         if frame_id < frame_start:
-#             continue
-
-#         for obj in objs:
-#             sc_id = obj["object sc id"]
-#             key = (cam_folder, sc_id)
-#             if key in existing_keys:
-#                 continue  # Skip already assigned
-
-#             coord = obj["3d location"]
-#             feat_path = obj.get("feature path", None)
-
-#             object_coords.setdefault(sc_id, []).append(coord)
-
-#             if feat_path and feat_path.lower().endswith(".npy"):
-#                 try:
-#                     feat_full_path = os.path.join("EmbedFeature", feat_path)
-#                     feature = np.load(feat_full_path)
-#                     object_features.setdefault(sc_id, []).append(feature)
-#                 except Exception as e:
-#                     print(f"Warning: Failed to load feature for sc_id={sc_id} from {feat_path}: {e}")
-#     # Final pass: warn if any sc_id is missing all features
-#     for sc_id in object_coords:
-#         if sc_id not in object_features or len(object_features[sc_id]) == 0:
-#             print(f"Warning: No feature found for camera={cam_folder}, sc_id={sc_id} in post-glance frames")
-#     return object_coords, object_features
 
 def extract_unassigned_coords_features_with_frames(data, cam_folder, frame_start, existing_keys):
     """

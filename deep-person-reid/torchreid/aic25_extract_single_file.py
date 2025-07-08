@@ -6,7 +6,7 @@ import argparse
 import os.path as osp
 import sys
 try:
-    sys.path.append('/data2/Hamid/AI_city_challenge_2025/AIC24_Track1_YACHIYO_RIIPS/deep-person-reid')
+    sys.path.append('deep-person-reid')
 except:
     print( "reid already in path")
 

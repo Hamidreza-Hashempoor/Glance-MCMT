@@ -13,7 +13,7 @@ from loguru import logger
 sys.path.append('.')
 
 try:
-    sys.path.append('/data2/Hamid/AI_city_challenge_2025/AIC24_Track1_YACHIYO_RIIPS/BoT-SORT')
+    sys.path.append('BoT-SORT')
 except:
     print( "bot sort already in path")
 
@@ -33,11 +33,10 @@ def make_parser():
     parser.add_argument("demo", default="video", help="demo type, eg. image, video and webcam")
     parser.add_argument("-expn", "--experiment-name", type=str, default=None)
     parser.add_argument("-n", "--name", type=str, default=None, help="model name")
-    parser.add_argument("--path", default="/data2/Hamid/AI_city_challenge_2025/AIC24_Track1_YACHIYO_RIIPS/AIC25_Track1/Val/Warehouse_016/videos/Camera/Camera.mp4", help="path to images or video")
+    parser.add_argument("--path", default="AIC25_Track1/Val/Warehouse_016/videos/Camera/Camera.mp4", help="path to images or video")
     parser.add_argument("--camid", type=int, default=0, help="webcam demo camera id")
     parser.add_argument("--save_result", action="store_true",help="whether to save the inference result of image/video")
-    parser.add_argument("-f", "--exp_file", default="/data2/Hamid/AI_city_challenge_2025/AIC24_Track1_YACHIYO_RIIPS/BoT-SORT/yolox/exps/example/mot/yolox_x_AI_City_25.py", type=str, help="pls input your expriment description file")
-    # parser.add_argument("-c", "--ckpt", default="/data2/Hamid/AI_city_challenge_2025/AIC24_Track1_YACHIYO_RIIPS/BoT-SORT/ai_city_ckpt.pth.tar", type=str, help="ckpt for eval")
+    parser.add_argument("-f", "--exp_file", default="BoT-SORT/yolox/exps/example/mot/yolox_x_AI_City_25.py", type=str, help="pls input your expriment description file")
     parser.add_argument("-c", "--ckpt", default="YOLOX_outputs/yolox_x_AI_City_25/5epochs_5000data/best_ckpt.pth.tar", type=str, help="ckpt for eval")
     
     
