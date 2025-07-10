@@ -1,4 +1,4 @@
-# Glance-MCMT: A General MCMT Framework with Glance Initialization and Progressive Association [AI CITY CHALLENGE 2025 TRACK1]
+# Glance-MCMT: A General MCMT Framework with Glance Initialization and Progressive Association (AI City Challenge 2025 Track1]
 
 ## Explanation
 I tried to provide a simple solution for MCMT tracking framework. The idea is simple and works based on progressive association, while an initial global ID association (I call it glance association) is conducted at first.
